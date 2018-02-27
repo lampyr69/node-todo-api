@@ -8,7 +8,13 @@ const { User } = require('./models/user.js')
 const app = express()
 let port = 3000
 
+const requestTime = (req, res, next) => {
+  req.requestTime = Date.now()
+  next()
+}
+
 app.use(bodyParser.json())
+app.use(requestTime)
 
 // create new todos by post
 app.post('/todos', (req, res) => {
@@ -26,9 +32,11 @@ app.post('/todos', (req, res) => {
       res.status(400).send(err)
     })
 
-  console.log(req.body)
+  console.log(`Time: ${req.requestTime} Request:${req.body.text}`)
 })
 
 app.listen(port, () => {
   console.log(`Started on port ${port}`)
 })
+
+module.exports = { app }
