@@ -35,6 +35,17 @@ app.post('/todos', (req, res) => {
   console.log(`Time: ${req.requestTime} Request:${req.body.text}`)
 })
 
+app.get('/todos', (req, res) => {
+  Todo.find()
+    .then((todos) => {
+      res.send({ todos, code: 'Some useful information' })
+    })
+    .catch((err) => {
+      res.status(400).send(e)
+    })
+})
+
+// start the web app
 app.listen(port, () => {
   console.log(`Started on port ${port}`)
 })
