@@ -4,9 +4,14 @@ const expect = require('expect')
 const { app } = require('./../server')
 const { Todo } = require('../models/todo')
 
+const todoArray = [{ text: 'first test todo' }, { text: 'second test todo' }]
 beforeEach((done) => {
   // removes all todos before each it('') test
-  Todo.remove({}).then(() => done())
+  Todo.remove({})
+    .then(() => {
+      return Todo.insertMany(todoArray)
+    })
+    .then(() => done())
 })
 
 describe('POST /todos', () => {
@@ -25,7 +30,7 @@ describe('POST /todos', () => {
           // stops function exceution
           return done(err)
         }
-        Todo.find()
+        Todo.find({ text })
           .then((todos) => {
             expect(todos.length).toBe(1)
             expect(todos[0].text).toBe(text)
@@ -47,10 +52,22 @@ describe('POST /todos', () => {
         }
         Todo.find()
           .then((todos) => {
-            expect(todos.length).toBe(0)
+            expect(todos.length).toBe(todoArray.length)
             done()
           })
           .catch((e) => done(e))
       })
+  })
+})
+
+describe('GET /todos', () => {
+  it('should get all todos', (done) => {
+    request(app)
+      .get('/todos')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todos.length).toBe(todoArray.length)
+      })
+      .end(done)
   })
 })
