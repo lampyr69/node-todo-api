@@ -1,4 +1,4 @@
-var { mongoose } = require('../db/mongoose')
+const { mongoose } = require('../db/mongoose')
 
 // Create an easy modell
 const Todo = mongoose.model('Todo', {

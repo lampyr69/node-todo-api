@@ -7,7 +7,7 @@ const { Todo } = require('./models/todo.js')
 const { User } = require('./models/user.js')
 
 const app = express()
-let port = 3000
+const port = process.env.PORT || 3000
 
 app.use(bodyParser.json())
 
@@ -43,17 +43,14 @@ app.get('/todos', (req, res) => {
 //
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id
-  console.log('ID', id)
 
   if (!ObjectID.isValid(id)) {
-    console.log('Invalid object id', id)
     return res.status(404).send({})
   }
 
   Todo.findById(id)
     .then((todo) => {
       if (!todo) {
-        console.log('Valid id, but no todo found')
         res.status(404).send({})
       }
 
@@ -62,15 +59,30 @@ app.get('/todos/:id', (req, res) => {
     .catch((e) => {
       res.status(400).send({})
     })
+})
 
-  // validate id
-  // 404 -< send empty body
-  // query database findById
-  // success
-  // if(todo) send it back
-  // WSAECANCELLED back 404 with empty
-  // error
-  // 400 - nothing or error
+// delete URI
+app.delete('/todos/:id', (req, res) => {
+  // get the id
+  const id = req.params.id
+  console.log('Got id', id)
+
+  if (!ObjectID.isValid(id)) {
+    console.log('Id is not valid', id)
+    return res.status(404).send({})
+  }
+
+  Todo.findByIdAndRemove(id)
+    .then((todo) => {
+      if (!todo) {
+        console.log('Id valid but not found')
+        return res.status(404).send({})
+      }
+      res.status(200).send(todo)
+    })
+    .catch((e) => {
+      res.status(400).send({})
+    })
 })
 
 // start the web app
