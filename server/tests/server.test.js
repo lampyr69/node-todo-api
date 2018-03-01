@@ -139,7 +139,7 @@ describe('DELETE /todos/:id', () => {
     const hexId = new ObjectId().toHexString()
 
     request(app)
-      .get(`/todos/${hexId}`)
+      .delete(`/todos/${hexId}`)
       .expect(404)
       .end(done)
   })
